@@ -85,7 +85,7 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
-if env.bool('USE_REMOTE'):
+if env.bool('USE_REMOTE_DB'):
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.mysql',

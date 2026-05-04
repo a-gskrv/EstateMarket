@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models.functions import Lower
 
 
 class ContactInfo(models.Model):
@@ -30,5 +31,28 @@ class ContactInfo(models.Model):
             models.UniqueConstraint(
                 fields=['user', 'contact_type'],
                 name='unique_user_contact_type'
+            )
+        ]
+
+
+class ContactType(models.Model):
+    name = models.CharField(
+        max_length=30,
+    )
+
+    add_by_default = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        db_table = 'users_contact_type'
+        verbose_name = 'Contact Type'
+        verbose_name_plural = 'Contact Types'
+
+        constraints = [
+            models.UniqueConstraint(
+                Lower('name'),
+                name='unique_name_users_contact_type'
             )
         ]

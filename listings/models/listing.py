@@ -1,32 +1,31 @@
-from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 from django.utils import timezone
 
-from bookings.models import Booking
-from users.models import User
 
-
-class Review(models.Model):
-    booking = models.ForeignKey(
-        Booking,
+class Listing(models.Model):
+    title = models.CharField(
+        max_length=150,
+    )
+    property = models.ForeignKey(
+        "listings.Property",
         on_delete=models.CASCADE,
-        related_name='reviews',
+        related_name="listings",
     )
 
-    user = models.ForeignKey(
-        User,
-        on_delete=models.CASCADE,
-        related_name='reviews'
+    price = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
     )
 
-    rating = models.PositiveSmallIntegerField(
-        validators=[
-            MinValueValidator(1),
-            MaxValueValidator(5)
-        ],
+    settlement_conditions = models.TextField(
+        blank=True,
+        null=True,
     )
 
-    review_text = models.TextField()
+    published_at = models.DateTimeField(
+        null=True,
+        blank=True,
+    )
 
     is_active = models.BooleanField(default=True)
 
@@ -41,12 +40,12 @@ class Review(models.Model):
     deleted_at = models.DateTimeField(null=True, blank=True)
 
     class Meta:
-        db_table = "em_reviews_review"
-        verbose_name = "Review"
-        verbose_name_plural = "Reviews"
+        db_table = 'em_listings_listing'
+        verbose_name = 'Listing'
+        verbose_name_plural = 'Listings'
 
     def __str__(self):
-        return f"{self.user}: {self.rating} -> ({self.booking.listing.title})"
+        return self.title
 
     def delete(self, using=None, keep_parents=False):
         self.is_active = False

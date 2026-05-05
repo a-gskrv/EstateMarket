@@ -8,7 +8,7 @@ class PropertyType(models.Model):
     name = models.CharField(max_length=30)
 
     class Meta:
-        db_table = 'listings_property_type'
+        db_table = 'em_listings_property_type'
         verbose_name = 'Property Type'
         verbose_name_plural = "Property Types"
 
@@ -44,7 +44,7 @@ class Location(models.Model):
     )
 
     class Meta:
-        db_table = 'listings_location'
+        db_table = 'em_listings_location'
         verbose_name = 'Location'
         verbose_name_plural = "Locations"
 
@@ -105,7 +105,7 @@ class Property(models.Model):
     deleted_at = models.DateTimeField(null=True, blank=True)
 
     class Meta:
-        db_table = "listings_property"
+        db_table = "em_listings_property"
         verbose_name = "Property"
         verbose_name_plural = "Properties"
 

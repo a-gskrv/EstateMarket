@@ -23,7 +23,7 @@ class ContactInfo(models.Model):
         return str_contact_info
 
     class Meta:
-        db_table = 'users_contact_info'
+        db_table = 'em_users_contact_info'
         verbose_name = 'Contact'
         verbose_name_plural = 'Contacts'
 
@@ -46,7 +46,7 @@ class ContactType(models.Model):
         return self.name
 
     class Meta:
-        db_table = 'users_contact_type'
+        db_table = 'em_users_contact_type'
         verbose_name = 'Contact Type'
         verbose_name_plural = 'Contact Types'
 

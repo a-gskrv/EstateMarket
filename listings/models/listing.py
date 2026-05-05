@@ -40,7 +40,7 @@ class Listing(models.Model):
     deleted_at = models.DateTimeField(null=True, blank=True)
 
     class Meta:
-        db_table = 'listings_listing'
+        db_table = 'em_listings_listing'
         verbose_name = 'Listing'
         verbose_name_plural = 'Listings'
 

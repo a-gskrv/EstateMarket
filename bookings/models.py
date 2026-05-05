@@ -65,7 +65,7 @@ class Booking(models.Model):
     deleted_at = models.DateTimeField(null=True, blank=True)
 
     class Meta:
-        db_table = "bookings_booking"
+        db_table = "em_bookings_booking"
         verbose_name = "Booking"
         verbose_name_plural = "Bookings"
 

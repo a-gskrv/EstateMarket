@@ -41,7 +41,7 @@ class Review(models.Model):
     deleted_at = models.DateTimeField(null=True, blank=True)
 
     class Meta:
-        db_table = "reviews_review"
+        db_table = "em_reviews_review"
         verbose_name = "Review"
         verbose_name_plural = "Reviews"
 

@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from users.models import User, ContactInfo, ContactType
+from apps.users.models import User, ContactInfo, ContactType
 
 # Register your models here.
 

@@ -44,11 +44,13 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    "rest_framework",
+
     # Local apps
-    "users",
-    "listings",
-    "bookings",
-    "reviews",
+    "apps.users.apps.UsersConfig",
+    "apps.listings.apps.ListingsConfig",
+    "apps.bookings.apps.BookingsConfig",
+    "apps.reviews.apps.ReviewsConfig",
 ]
 
 MIDDLEWARE = [

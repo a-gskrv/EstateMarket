@@ -1,8 +1,8 @@
 from django.db import models
 from django.utils import timezone
 
-from listings.models import Listing
-from users.models import User
+from apps.listings.models import Listing
+from apps.users.models import User
 
 
 class BookingStatus(models.IntegerChoices):
@@ -15,13 +15,13 @@ class BookingStatus(models.IntegerChoices):
 
 class Booking(models.Model):
     listing = models.ForeignKey(
-        Listing,
+        'listings.Listing',
         on_delete=models.PROTECT,
         related_name="bookings",
     )
 
     tenant = models.ForeignKey(
-        User,
+        'users.User',
         on_delete=models.PROTECT,
         related_name="bookings",
     )

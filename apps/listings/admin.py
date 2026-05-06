@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from listings.models import Listing, Location, Property, PropertyType
+from apps.listings.models import Listing, Location, Property, PropertyType
 
 # Register your models here.
 

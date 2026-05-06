@@ -2,4 +2,5 @@ from django.apps import AppConfig
 
 
 class ListingsConfig(AppConfig):
-    name = 'listings'
+    name = 'apps.listings'
+    label = 'listings'

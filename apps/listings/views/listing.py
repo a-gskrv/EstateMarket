@@ -1,6 +1,10 @@
+import django_filters
 from django.utils import timezone
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import filters
 from rest_framework.viewsets import ModelViewSet
 
+from apps.listings.filters import ListingFilter
 from apps.listings.models import Listing, Property
 from apps.listings.serializers.listing import (
     ListingListSerializer,
@@ -10,6 +14,33 @@ from apps.listings.serializers.listing import (
 
 
 class ListingViewSet(ModelViewSet):
+    filter_backends = (
+        DjangoFilterBackend,
+        filters.OrderingFilter,
+        filters.SearchFilter
+    )
+
+    filterset_class = ListingFilter
+
+    # filterset_fields = (
+    #     'price',
+    #     'property__location__region',
+    #     'property__location__city',
+    #     'property__rooms_count',
+    #     'property__property_type',
+    # )
+
+    search_fields = (
+        'title',
+        'property__description',
+    )
+
+    ordering_fields = (
+        'price',
+        'created_at',
+        'updated_at',
+    )
+
     queryset = Listing.objects.all()
 
     def get_serializer_class(self):

@@ -1,20 +1,20 @@
+from django.contrib.auth import get_user_model
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 from django.utils import timezone
 
-from bookings.models import Booking
-from users.models import User
 
+USER_MODEL = get_user_model()
 
 class Review(models.Model):
     booking = models.ForeignKey(
-        Booking,
+        "bookings.Booking",
         on_delete=models.CASCADE,
         related_name='reviews',
     )
 
     user = models.ForeignKey(
-        User,
+        USER_MODEL,
         on_delete=models.CASCADE,
         related_name='reviews'
     )

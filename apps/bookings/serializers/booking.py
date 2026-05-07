@@ -1,9 +1,25 @@
 from rest_framework import serializers
 
 from apps.bookings.models import Booking
-from apps.listings.serializers import LocationDetailSerializer, ListingDetailSerializer
+from apps.listings.serializers import LocationDetailSerializer, ListingDetailSerializer, ListingListSerializer
 from apps.users.serializers import UserShortSerializer
 
+
+class BookingShortListSerializer(serializers.ModelSerializer):
+    listing = ListingListSerializer(read_only=True)
+    user = UserShortSerializer(read_only=True)
+    class Meta:
+        model = Booking
+        fields = [
+            'id',
+            'user',
+            'listing',
+            'booking_start_date',
+            'booking_end_date',
+            'booking_amount',
+            'booking_status',
+            'is_tenant_checked_in',
+        ]
 
 class BookingDetailSerializer(serializers.ModelSerializer):
     class Meta:

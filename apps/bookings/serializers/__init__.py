@@ -1,1 +1,1 @@
-from .booking import BookingListSerializer, BookingDetailSerializer
+from .booking import BookingListSerializer, BookingDetailSerializer, BookingShortListSerializer

@@ -62,3 +62,11 @@ class ListingViewSet(ModelViewSet):
                 'deleted_at'
             ]
         )
+
+    def list(self, request, *args, **kwargs):
+        search = request.query_params.get('search')
+        if search:
+            ...
+
+        super.list(self, request, *args, **kwargs)
+

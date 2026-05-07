@@ -25,7 +25,7 @@ class Property(models.Model):
     )
     property_type = models.ForeignKey(
         'PropertyType',
-        on_delete=models.PROTECT,
+        on_delete=models.RESTRICT,
         related_name="properties",
     )
     description = models.TextField(
@@ -34,7 +34,7 @@ class Property(models.Model):
     )
     location = models.ForeignKey(
         "listings.Location",
-        on_delete=models.PROTECT,
+        on_delete=models.RESTRICT,
         related_name="properties",
     )
 
@@ -44,7 +44,7 @@ class Property(models.Model):
 
     owner = models.ForeignKey(
         User,
-        on_delete=models.PROTECT,
+        on_delete=models.RESTRICT,
         related_name="properties",
     )
 

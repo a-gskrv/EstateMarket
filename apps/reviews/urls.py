@@ -1,10 +1,10 @@
 from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 
-from apps.bookings.views.booking import BookingViewSet
+from apps.reviews.views import ReviewViewSet
 
 router = DefaultRouter()
-router.register("bookings", BookingViewSet, basename="booking")
+router.register("reviews", ReviewViewSet, basename="review")
 
 urlpatterns = [
     path("", include(router.urls)),

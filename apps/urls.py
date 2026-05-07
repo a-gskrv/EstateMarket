@@ -15,7 +15,6 @@ router.register("listings", ListingViewSet, basename="listing")
 router.register("properties", PropertyViewSet, basename="property")
 router.register("property_types", PropertyTypeViewSet, basename="property_type")
 
-
 router.register("reviews", ReviewViewSet, basename="review")
 
 urlpatterns = [

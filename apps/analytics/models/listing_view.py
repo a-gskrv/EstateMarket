@@ -5,7 +5,7 @@ class ListingView(models.Model):
     listing = models.ForeignKey(
         'listings.Listing',
         on_delete=models.CASCADE,
-        related_name='views_',
+        related_name='views',
     )
 
     user = models.ForeignKey(
@@ -16,7 +16,14 @@ class ListingView(models.Model):
         related_name='listing_views'
     )
 
-    guest_id = models.CharField(
+    guest_ip = models.CharField(
+        max_length=40,
+        null=True,
+        blank=True
+    )
+
+    # browser
+    guest_agent = models.CharField(
         max_length=100,
         null=True,
         blank=True

@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     "apps.listings.apps.ListingsConfig",
     "apps.bookings.apps.BookingsConfig",
     "apps.reviews.apps.ReviewsConfig",
+    "apps.analytics.apps.AnalyticsConfig",
 ]
 
 MIDDLEWARE = [

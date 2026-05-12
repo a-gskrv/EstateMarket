@@ -1,9 +1,11 @@
 import django_filters
 from django.utils import timezone
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import filters
+from rest_framework import filters, status
+from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 
+from apps.analytics.services.listing_views import register_listing_view
 from apps.listings.filters import ListingFilter
 from apps.listings.models import Listing, Property
 from apps.listings.serializers.listing import (
@@ -63,10 +65,40 @@ class ListingViewSet(ModelViewSet):
             ]
         )
 
-    def list(self, request, *args, **kwargs):
-        search = request.query_params.get('search')
-        if search:
-            ...
+    def retrieve(self, request, *args, **kwargs):
+        try:
+            listing = self.get_object()
+            if request.user and request.user.is_authenticated:
+                user = request.user
+            else:
+                user = None
+            guest_ip = request.META.get('REMOTE_ADDR')
+            guest_agent = request.META.get('HTTP_USER_AGENT')
 
-        super.list(self, request, *args, **kwargs)
+            register_listing_view(
+                listing=listing,
+                user=user,
+                guest_ip=guest_ip,
+                guest_agent=guest_agent
+            )
 
+
+        except Exception as e:
+            print(e)
+            # return Response(status=status.HTTP_403_FORBIDDEN)
+
+        # return Response(
+        #     data=
+        #     status=status.HTTP_200_OK
+        # )
+
+        return super().retrieve(self, request, *args, **kwargs)
+
+    #
+    # def list(self, request, *args, **kwargs):
+    #     search = request.query_params.get('search')
+    #     if search:
+    #         ...
+    #
+    #     super().list(self, request, *args, **kwargs)
+    # #

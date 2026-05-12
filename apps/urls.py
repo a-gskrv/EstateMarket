@@ -1,6 +1,7 @@
 from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 
+from apps.analytics.views import AnalyticsView
 from apps.bookings.views.booking import BookingViewSet
 from apps.listings.views import (
     ListingViewSet,
@@ -19,4 +20,5 @@ router.register("reviews", ReviewViewSet, basename="review")
 
 urlpatterns = [
     path("", include(router.urls)),
+    path("analytics/", AnalyticsView.as_view(), name="analytics"),
 ]

@@ -5,7 +5,7 @@ from django.utils import timezone
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from apps.analytics.serializers import TopListingViewSerializer
+from apps.analytics.serializers import TopListingViewSerializer, TopListingReviewsSerializer
 from apps.listings.models import Listing
 
 
@@ -16,32 +16,73 @@ class AnalyticsView(APIView):
         days = request.query_params.get('days')
         count = request.query_params.get('count')
 
-        top_listing_view = Listing.objects.all().filter(is_active=True)
-        if days and days.isdigit() and int(days)>0:
+
+        if days and days.isdigit() and int(days) > 0:
             period_start = timezone.now() - timedelta(days=int(days))
         else:
             period_start = timezone.now() - timedelta(days=90)
 
-        top_listing_view = top_listing_view.annotate(
-            views_count=Count(
-                'views',
-                filter=Q(views__created_at__gte=period_start)
-            )
-        )
 
-        top_listing_view = top_listing_view.order_by('-views_count')
+        if count and count.isdigit() and int(count) > 0:
+            count = int(count)
 
-        if count and count.isdigit() and int(count)>0:
-            top_listing_view = top_listing_view[:int(count)]
         else:
-            top_listing_view = top_listing_view[:100]
+            count = None
 
-        serializer = TopListingViewSerializer(top_listing_view, many=True)
-
-
+        top_listing_view = get_top_listing_view(period_start, count)
+        top_listing_reviews = get_top_listing_reviews(period_start, count)
 
         return Response({
-            'top_listing_view': serializer.data,
+            'top_listing_view': top_listing_view,
+            'top_listing_reviews': top_listing_reviews,
         })
 
 
+def get_top_listing_view(period_start=None, count=None):
+
+    top_listing = Listing.objects.all().filter(is_active=True)
+
+    if period_start:
+        filter_date = Q(views__created_at__gte=period_start)
+    else:
+        filter_date = Q()
+
+    top_listing = top_listing.annotate(
+        views_count=Count(
+            'views',
+            filter=filter_date
+        )
+    )
+
+    if count:
+        top_listing_view = top_listing[:int(count)]
+
+    top_listing = top_listing.order_by('-views_count')
+    serializer = TopListingViewSerializer(top_listing, many=True)
+    return serializer.data
+
+
+def get_top_listing_reviews(period_start=None, count=None):
+
+    top_listing = Listing.objects.all().filter(is_active=True)
+
+    if period_start:
+        filter_date = Q(bookings__reviews__created_at__gte=period_start)
+    else:
+        filter_date = Q()
+
+    print(period_start)
+
+    top_listing = top_listing.annotate(
+        reviews_count=Count(
+            'bookings__reviews',
+            filter=filter_date
+        )
+    )
+
+    top_listing = top_listing.order_by('-reviews_count')
+    if count:
+        top_listing = top_listing[:int(count)]
+
+    serializer = TopListingReviewsSerializer(top_listing, many=True)
+    return serializer.data

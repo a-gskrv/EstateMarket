@@ -17,6 +17,10 @@ class BookingViewSet(viewsets.ModelViewSet):
 
         return BookingListSerializer
 
+    def perform_create(self, serializer):
+        serializer.validated_data['tenant'] = self.request.user
+        super().perform_create(serializer)
+
 
     @action(
         detail=True,

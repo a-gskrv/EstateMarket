@@ -16,13 +16,13 @@ class BookingStatus(models.IntegerChoices):
 class Booking(models.Model):
     listing = models.ForeignKey(
         'listings.Listing',
-        on_delete=models.PROTECT,
+        on_delete=models.RESTRICT,
         related_name="bookings",
     )
 
     tenant = models.ForeignKey(
         'users.User',
-        on_delete=models.PROTECT,
+        on_delete=models.RESTRICT,
         related_name="bookings",
     )
 

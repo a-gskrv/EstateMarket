@@ -9,6 +9,7 @@ from .property import (
 
     PropertyDetailSerializer,
     PropertyCreateUpdateSerializer,
+    PropertyListSerializer,
 )
 
 from .location import (

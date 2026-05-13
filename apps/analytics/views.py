@@ -58,7 +58,7 @@ def get_top_listing_view(period_start=None, count=None):
     )
 
     if count:
-        top_listing_view = top_listing[:int(count)]
+        top_listing = top_listing[:int(count)]
 
     top_listing = top_listing.order_by('-views_count')
     serializer = TopListingViewSerializer(top_listing, many=True)

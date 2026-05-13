@@ -14,11 +14,19 @@ class SearchQuery(models.Model):
         related_name='search_queries'
     )
 
-    guest_id = models.CharField(
+    guest_ip = models.CharField(
+        max_length=40,
+        null=True,
+        blank=True
+    )
+
+    # browser
+    guest_agent = models.CharField(
         max_length=100,
         null=True,
         blank=True
     )
+
 
     created_at = models.DateTimeField(auto_now_add=True)
 

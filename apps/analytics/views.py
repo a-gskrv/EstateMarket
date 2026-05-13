@@ -5,7 +5,8 @@ from django.utils import timezone
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from apps.analytics.serializers import TopListingViewSerializer, TopListingReviewsSerializer
+from apps.analytics.models import SearchQuery
+from apps.analytics.serializers import TopListingViewSerializer, TopListingReviewsSerializer, TopSearchQuerySerializer
 from apps.listings.models import Listing
 
 
@@ -31,10 +32,12 @@ class AnalyticsView(APIView):
 
         top_listing_view = get_top_listing_view(period_start, count)
         top_listing_reviews = get_top_listing_reviews(period_start, count)
+        top_search_query = get_top_search_query(period_start, count)
 
         return Response({
             'top_listing_view': top_listing_view,
             'top_listing_reviews': top_listing_reviews,
+            'top_search_query': top_search_query,
         })
 
 
@@ -85,4 +88,23 @@ def get_top_listing_reviews(period_start=None, count=None):
         top_listing = top_listing[:int(count)]
 
     serializer = TopListingReviewsSerializer(top_listing, many=True)
+    return serializer.data
+
+
+def get_top_search_query(period_start = None, count = 10):
+
+    top_query = SearchQuery.objects.all()
+
+    if period_start:
+        filter_date = Q(created_at__gte=period_start)
+
+
+    top_query = (
+        top_query
+        .values('query')
+        .annotate(search_count=Count('id'))
+        .order_by('-search_count', '-created_at')[:count]
+    )
+
+    serializer = TopSearchQuerySerializer(top_query, many=True)
     return serializer.data

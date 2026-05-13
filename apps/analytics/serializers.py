@@ -1,5 +1,6 @@
 from rest_framework import serializers
 
+from apps.analytics.models import SearchQuery
 from apps.listings.models import Listing
 
 
@@ -33,4 +34,15 @@ class TopListingReviewsSerializer(serializers.ModelSerializer):
             'title',
             'price',
             # 'property',
+        )
+
+class TopSearchQuerySerializer(serializers.ModelSerializer):
+    search_count = serializers.IntegerField(read_only=True)
+
+    # property = PropertyListSerializer(read_only=True)
+    class Meta:
+        model = SearchQuery
+        fields = (
+            'search_count',
+            'query',
         )

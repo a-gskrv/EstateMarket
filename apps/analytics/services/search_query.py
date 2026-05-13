@@ -2,21 +2,21 @@ from datetime import timedelta
 
 from django.utils import timezone
 
-from apps.analytics.models import ListingView
-from apps.listings.models import Listing
+from apps.analytics.models import SearchQuery
 from apps.users.models import User
 
 
-def register_listing_view(
-        listing: Listing,
+def register_search_query(
+        query: str,
         user: User = None,
         guest_ip: str = None,
         guest_agent: str = None,
 ):
-    if is_unique_listing_view(listing, user, guest_ip, guest_agent):
+    lower_query = query.lower().strip()
+    if is_unique_search_query(lower_query, user, guest_ip, guest_agent):
         try:
-            ListingView.objects.create(
-                listing=listing,
+            SearchQuery.objects.create(
+                query=lower_query,
                 user=user,
                 guest_ip=guest_ip,
                 guest_agent=guest_agent,
@@ -27,17 +27,17 @@ def register_listing_view(
             print(e)
 
 
-def is_unique_listing_view(listing: Listing, user, guest_ip, guest_agent):
+def is_unique_search_query(query: str, user, guest_ip, guest_agent):
     period_start = timezone.now() - timedelta(days=1)
     if user and user.is_authenticated:
-        already_exists = ListingView.objects.filter(
-            listing=listing,
+        already_exists = SearchQuery.objects.filter(
+            query=query,
             user=user,
             created_at__gte=period_start,
         ).exists()
     else:
-        already_exists = ListingView.objects.filter(
-            listing=listing,
+        already_exists = SearchQuery.objects.filter(
+            query=query,
             user=None,
             guest_ip=guest_ip,
             guest_agent=guest_agent,

@@ -2,18 +2,23 @@ import django_filters
 from django.utils import timezone
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, status
+from rest_framework.decorators import permission_classes
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 
 from apps.analytics.services.listing_views import register_listing_view
 from apps.analytics.services.search_query import register_search_query
+from apps.core.permissions import IsLandlord
 from apps.listings.filters import ListingFilter
 from apps.listings.models import Listing, Property
+from apps.listings.permissions import IsListingOwner
 from apps.listings.serializers.listing import (
     ListingListSerializer,
     ListingDetailSerializer,
     ListingCreateUpdateSerializer
 )
+from apps.users.permissions import IsAdmin
 
 
 class ListingViewSet(ModelViewSet):
@@ -55,17 +60,31 @@ class ListingViewSet(ModelViewSet):
 
         return ListingDetailSerializer
 
-    def perform_destroy(self, instance):
-        instance.is_active = False
-        instance.is_deleted = True
-        instance.deleted_at = timezone.now()
-        return instance.save(
-            update_fields=[
-                'is_active',
-                'is_deleted',
-                'deleted_at'
-            ]
-        )
+    def get_permissions(self):
+        if self.action == 'create':
+            permission_classes = [IsLandlord]
+        elif self.action  in ["update", "partial_update", "destroy"]:
+            permission_classes = [
+                IsAuthenticated,
+                IsListingOwner | IsAdmin]
+
+        else:
+            permission_classes = [AllowAny]
+
+
+        return [permission() for permission in permission_classes]
+
+    # def perform_destroy(self, instance):
+    #     instance.is_active = False
+    #     instance.is_deleted = True
+    #     instance.deleted_at = timezone.now()
+    #     return instance.save(
+    #         update_fields=[
+    #             'is_active',
+    #             'is_deleted',
+    #             'deleted_at'
+    #         ]
+    #     )
 
     def retrieve(self, request, *args, **kwargs):
         try:
@@ -74,6 +93,7 @@ class ListingViewSet(ModelViewSet):
                 user = request.user
             else:
                 user = None
+
             guest_ip = request.META.get('REMOTE_ADDR')
             guest_agent = request.META.get('HTTP_USER_AGENT')
 

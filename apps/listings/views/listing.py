@@ -44,6 +44,7 @@ class ListingViewSet(ModelViewSet):
         'updated_at',
     )
 
+    #selectrelated  &  prefetch_related()
     queryset = Listing.objects.all()
 
     def get_serializer_class(self):

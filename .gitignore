@@ -6,3 +6,7 @@ __pycache__/
 
 test.py
 faker/
+
+db.sqlite3
+
+temp/

@@ -62,10 +62,13 @@ class ListingViewSet(ModelViewSet):
 
     def get_permissions(self):
         if self.action == 'create':
-            permission_classes = [IsLandlord]
+            permission_classes = [
+                # IsAuthenticated,
+                IsLandlord | IsAdmin
+            ]
         elif self.action  in ["update", "partial_update", "destroy"]:
             permission_classes = [
-                IsAuthenticated,
+                # IsAuthenticated,
                 IsListingOwner | IsAdmin]
 
         else:

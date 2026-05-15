@@ -10,3 +10,5 @@ faker/
 db.sqlite3
 
 temp/
+
+**/*.pem

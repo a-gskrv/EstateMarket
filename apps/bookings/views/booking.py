@@ -4,18 +4,28 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 
 from apps.bookings.models import Booking, BookingStatus
-from apps.bookings.serializers import BookingListSerializer, BookingDetailSerializer
-from apps.bookings.serializers.booking import BookingUpdateStatusSerializer
+from apps.bookings.serializers import (
+    BookingListSerializer,
+    BookingDetailSerializer,
+    BookingUpdateStatusSerializer,
+    BookingCreateSerializer
+)
 
 
 class BookingViewSet(viewsets.ModelViewSet):
     queryset = Booking.objects.all()
 
     def get_serializer_class(self):
-        if self.action in ('create', 'update', 'partial_update'):
+        if self.action in ('update', 'partial_update'):
             return BookingDetailSerializer
+        elif self.action == 'create':
+            return BookingCreateSerializer
 
         return BookingListSerializer
+
+
+    def get_permissions(self):
+        if self.action in ('create', 'update', 'partial_update'):
 
     def perform_create(self, serializer):
         serializer.validated_data['tenant'] = self.request.user

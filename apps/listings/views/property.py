@@ -1,10 +1,8 @@
 from django.utils import timezone
-from rest_framework.permissions import IsAuthenticated, AllowAny
+
 from rest_framework.viewsets import ModelViewSet
 
-from apps.core.permissions import IsLandlord
 from apps.listings.models import Listing, Property, PropertyType
-from apps.listings.permissions import IsPropertyOwner
 
 from apps.listings.serializers.property import (
     PropertyListSerializer,
@@ -14,7 +12,6 @@ from apps.listings.serializers.property import (
     PropertyTypeListSerializer,
     PropertyCreateUpdateSerializer,
 )
-from apps.users.permissions import IsAdmin
 
 
 class PropertyViewSet(ModelViewSet):
@@ -28,20 +25,19 @@ class PropertyViewSet(ModelViewSet):
 
         return PropertyDetailSerializer
 
-    def get_permissions(self):
-        if self.action == 'create':
-            permission_classes = [
-                # IsAuthenticated,
-                IsLandlord | IsAdmin
-            ]
-        elif self.action  in ["update", "partial_update", "destroy"]:
-            permission_classes = [
-                # IsAuthenticated,
-                IsPropertyOwner | IsAdmin]
-
-        else:
-            permission_classes = [AllowAny]
-
+        # def get_permissions(self):
+        #     if self.action == 'create':
+        #         permission_classes = [
+        #             # IsAuthenticated,
+        #             IsLandlord | IsAdmin
+        #         ]
+        #     elif self.action  in ["update", "partial_update", "destroy"]:
+        #         permission_classes = [
+        #             # IsAuthenticated,
+        #             IsPropertyOwner | IsAdmin]
+        #
+        #     else:
+        #         permission_classes = [AllowAny]
 
         return [permission() for permission in permission_classes]
 

@@ -42,6 +42,42 @@ class BookingDetailSerializer(serializers.ModelSerializer):
             'deleted_at',
         ]
 
+        read_only_fields = [
+            'id',
+            'listing',
+            'tenant',
+            'confirmed_at',
+            'booking_amount',
+            'booking_status',
+            'is_tenant_checked_in',
+
+            'is_active',
+            'created_at',
+            'updated_at',
+            'is_deleted',
+            'deleted_at',
+
+        ]
+
+class BookingCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Booking
+        fields = '__all__'
+
+    def validate(self, attrs):
+        request = self.context.get('request')
+        user = request.user
+
+        listing = attrs.get('listing')
+        owner = listing.property.owner
+
+        if user == owner:
+            raise serializers.ValidationError(
+                'You cannot create a booking for your own listing.'
+            )
+
+        return attrs
+
 
 class BookingListSerializer(serializers.ModelSerializer):
     listing = ListingDetailSerializer(read_only=True)

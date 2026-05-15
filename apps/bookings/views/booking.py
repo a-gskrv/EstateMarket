@@ -26,6 +26,7 @@ class BookingViewSet(viewsets.ModelViewSet):
 
     def get_permissions(self):
         if self.action in ('create', 'update', 'partial_update'):
+            ...
 
     def perform_create(self, serializer):
         serializer.validated_data['tenant'] = self.request.user

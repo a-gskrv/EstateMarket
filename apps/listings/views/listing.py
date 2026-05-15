@@ -12,6 +12,7 @@ from apps.analytics.services.search_query import register_search_query
 from apps.core.permissions import IsLandlord
 from apps.listings.filters import ListingFilter
 from apps.listings.models import Listing, Property
+from apps.listings.permissions import IsListingOwnerOrReadOnly
 
 from apps.listings.serializers.listing import (
     ListingListSerializer,

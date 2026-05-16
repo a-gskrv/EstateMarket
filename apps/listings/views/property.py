@@ -1,4 +1,5 @@
 from django.utils import timezone
+
 from rest_framework.viewsets import ModelViewSet
 
 from apps.listings.models import Listing, Property, PropertyType
@@ -24,17 +25,33 @@ class PropertyViewSet(ModelViewSet):
 
         return PropertyDetailSerializer
 
-    def perform_destroy(self, instance):
-        instance.is_active = False
-        instance.is_deleted = True
-        instance.deleted_at = timezone.now()
-        return instance.save(
-            update_fields=[
-                'is_active',
-                'is_deleted',
-                'deleted_at'
-            ]
-        )
+        # def get_permissions(self):
+        #     if self.action == 'create':
+        #         permission_classes = [
+        #             # IsAuthenticated,
+        #             IsLandlord | IsAdmin
+        #         ]
+        #     elif self.action  in ["update", "partial_update", "destroy"]:
+        #         permission_classes = [
+        #             # IsAuthenticated,
+        #             IsPropertyOwner | IsAdmin]
+        #
+        #     else:
+        #         permission_classes = [AllowAny]
+
+        return [permission() for permission in permission_classes]
+
+    # def perform_destroy(self, instance):
+    #     instance.is_active = False
+    #     instance.is_deleted = True
+    #     instance.deleted_at = timezone.now()
+    #     return instance.save(
+    #         update_fields=[
+    #             'is_active',
+    #             'is_deleted',
+    #             'deleted_at'
+    #         ]
+    #     )
 
 
 class PropertyTypeViewSet(ModelViewSet):

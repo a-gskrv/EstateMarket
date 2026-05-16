@@ -33,8 +33,6 @@ class Review(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(
         auto_now=True,
-        null=True,
-        blank=True,
     )
 
     is_deleted = models.BooleanField(default=False)
@@ -44,6 +42,13 @@ class Review(models.Model):
         db_table = "em_reviews_review"
         verbose_name = "Review"
         verbose_name_plural = "Reviews"
+
+        constraints = [
+            models.UniqueConstraint(
+                fields=["booking", "user"],
+                name="unique_review_per_booking_user",
+            )
+        ]
 
     def __str__(self):
         return f"{self.user}: {self.rating} -> ({self.booking.listing.title})"

@@ -1,0 +1,13 @@
+../.env
+
+!Dockerfile
+!requirements.txt
+!manage.py
+!paginators.py
+
+
+!apps/
+!apps/**
+
+!config/
+!config/**

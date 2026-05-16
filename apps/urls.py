@@ -1,5 +1,6 @@
 from django.urls import include, path
 from rest_framework.routers import DefaultRouter
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 from apps.analytics.views import AnalyticsView
 from apps.bookings.views.booking import BookingViewSet
@@ -8,6 +9,7 @@ from apps.listings.views import (
     PropertyViewSet,
     PropertyTypeViewSet)
 from apps.reviews.views import ReviewViewSet
+from apps.users.views import LoginUser, LogoutUser, RegisterUserView, RefreshUserTokenView
 
 router = DefaultRouter()
 router.register("bookings", BookingViewSet, basename="booking")
@@ -21,4 +23,11 @@ router.register("reviews", ReviewViewSet, basename="review")
 urlpatterns = [
     path("", include(router.urls)),
     path("analytics/", AnalyticsView.as_view(), name="analytics"),
+
+    # path('jwt-login/', TokenObtainPairView.as_view()),
+
+    path("auth/login/", LoginUser.as_view(), name="login"),
+    path("auth/refresh-token/", RefreshUserTokenView.as_view(), name='refresh_token'),
+    path("auth/logout/", LogoutUser.as_view(), name="logout"),
+    path("auth/register/", RegisterUserView.as_view(), name="register"),
 ]

@@ -56,6 +56,7 @@ class ListingViewSet(ModelViewSet):
     permission_classes = [IsListingOwnerOrReadOnly]
 
     def get_serializer_class(self):
+        print('get_serializer_class', self.request.user, self.action, self.request.method)
         if self.action == 'list':
             return ListingListSerializer
         if self.action in ('create', 'update', 'partial_update'):

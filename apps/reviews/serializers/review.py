@@ -27,6 +27,7 @@ class ReviewListSerializer(serializers.ModelSerializer):
             return f"{obj.review_text[:96]} ..."
         return obj.review_text
 
+
 class ReviewDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Review
@@ -39,23 +40,31 @@ class ReviewCreateSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
     def validate(self, attrs):
+
         request = self.context.get('request')
         user = request.user
 
         booking = attrs.get('booking')
+
+        if not booking:
+            raise serializers.ValidationError(
+                {"booking": "Booking is required."}
+            )
+
+        if Review.objects.filter(booking=booking, user=user).exists():
+            raise serializers.ValidationError(
+                "You have already reviewed this booking."
+            )
+
         tenant = booking.tenant
-        is_tenant_checked_in = booking.is_tenant_checked_in
 
         if user != tenant:
             raise serializers.ValidationError(
                 'You can review only your own booking.'
             )
-        if is_tenant_checked_in == False:
+        if not booking.is_tenant_checked_in:
             raise serializers.ValidationError(
-                'You can leave a review only after check-in.'
+                'You can leave a review only after staying at the property.'
             )
 
         return attrs
-
-
-

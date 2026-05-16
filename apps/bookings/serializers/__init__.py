@@ -4,4 +4,5 @@ from .booking import (
     BookingCreateSerializer,
     BookingShortListSerializer,
     BookingUpdateStatusSerializer,
+    BookingChangeDateSerializer
 )

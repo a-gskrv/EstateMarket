@@ -43,6 +43,13 @@ class Review(models.Model):
         verbose_name = "Review"
         verbose_name_plural = "Reviews"
 
+        constraints = [
+            models.UniqueConstraint(
+                fields=["booking", "user"],
+                name="unique_review_per_booking_user",
+            )
+        ]
+
     def __str__(self):
         return f"{self.user}: {self.rating} -> ({self.booking.listing.title})"
 

@@ -1,6 +1,10 @@
+from datetime import timedelta
+
+from django.utils import timezone
 from rest_framework import serializers
 
 from apps.bookings.models import Booking
+from apps.bookings.utils import check_booking_availability
 from apps.listings.serializers import LocationDetailSerializer, ListingDetailSerializer, ListingListSerializer
 from apps.users.serializers import UserShortSerializer
 
@@ -31,6 +35,7 @@ class BookingDetailSerializer(serializers.ModelSerializer):
             'confirmed_at',
             'booking_start_date',
             'booking_end_date',
+            'actual_end_date',
             'booking_amount',
             'booking_status',
             'is_tenant_checked_in',
@@ -76,6 +81,19 @@ class BookingCreateSerializer(serializers.ModelSerializer):
                 'You cannot create a booking for your own listing.'
             )
 
+        booking_end_date = attrs.get('booking_end_date')
+        booking_start_date = attrs.get('booking_start_date')
+        is_listing_available = check_booking_availability(
+            listing,
+            booking_start_date,
+            booking_end_date,
+        )
+
+        if not is_listing_available:
+            raise serializers.ValidationError(
+                "This listing is not available for the selected dates."
+            )
+
         return attrs
 
 
@@ -92,6 +110,7 @@ class BookingListSerializer(serializers.ModelSerializer):
             'confirmed_at',
             'booking_start_date',
             'booking_end_date',
+            'actual_end_date',
             'booking_amount',
             'booking_status',
             'is_tenant_checked_in',
@@ -111,4 +130,34 @@ class BookingUpdateStatusSerializer(serializers.ModelSerializer):
             'booking_status',
             'is_tenant_checked_in',
             'updated_at',
+            'actual_end_date'
         ]
+
+class BookingChangeDateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Booking
+        fields = [
+            'booking_start_date',
+            'booking_end_date',
+        ]
+
+    def validate(self, attrs):
+        max_cancel_day = 2
+        max_date_change = timezone.now().date() + timedelta(days=max_cancel_day)
+
+        old_booking_start_date = self.instance.booking_start_date
+
+        booking_start_date = attrs.get('booking_start_date')
+        booking_end_date = attrs.get('booking_end_date')
+
+        if max_date_change > old_booking_start_date:
+            raise serializers.ValidationError(
+                'Booking dates can no longer be changed before check-in.'
+            )
+
+        if booking_start_date > booking_end_date:
+            raise serializers.ValidationError(
+                'Booking end date must be later than booking start date.'
+            )
+
+        return attrs

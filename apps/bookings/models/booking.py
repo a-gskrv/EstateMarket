@@ -39,6 +39,11 @@ class Booking(models.Model):
         null=True,
         blank=True,
     )
+    actual_end_date = models.DateField(
+        null=True,
+        blank=True,
+        default=None
+    )
     booking_amount = models.DecimalField(
         max_digits=10,
         decimal_places=2,

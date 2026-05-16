@@ -1,6 +1,7 @@
 from rest_framework import viewsets
 
 from apps.reviews.models.review import Review
+from apps.reviews.permissions import IsBookingTenantOrReadOnly
 from apps.reviews.serializers import ReviewListSerializer, ReviewDetailSerializer, ReviewCreateSerializer
 
 
@@ -15,7 +16,9 @@ class ReviewViewSet(viewsets.ModelViewSet):
 
         return ReviewDetailSerializer
 
-    # Настроить права доступа
+    def get_permissions(self):
+        return [IsBookingTenantOrReadOnly]
+
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)

@@ -6,7 +6,14 @@ from apps.reviews.serializers import ReviewListSerializer, ReviewDetailSerialize
 
 
 class ReviewViewSet(viewsets.ModelViewSet):
-    queryset = Review.objects.all()
+
+    def get_queryset(self):
+        user = self.request.user
+
+        if user and user.is_authenticated and user.is_superuser:
+            return Review.all_objects.all()
+
+        return Review.objects.all()
 
     def get_serializer_class(self):
         if self.action == "list":
@@ -18,7 +25,6 @@ class ReviewViewSet(viewsets.ModelViewSet):
 
     def get_permissions(self):
         return [IsBookingTenantOrReadOnly]
-
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)

@@ -26,10 +26,9 @@ class BookingViewSet(viewsets.ModelViewSet):
         user = self.request.user
 
         if user and user.is_authenticated and user.is_superuser:
-            return Booking.objects.all()
+            return Booking.all_objects.all()
 
         queryset = Booking.objects.all()
-        queryset = queryset.filter(is_active=True)
         queryset = queryset.filter(
             Q(tenant=user) |
             Q(listing__property__owner=user)
@@ -37,10 +36,6 @@ class BookingViewSet(viewsets.ModelViewSet):
         return queryset
 
     def get_serializer_class(self):
-        # if self.action in ('update', 'partial_update'):
-        #     return BookingDetailSerializer
-        # elif self.action == 'create':
-        #     return BookingCreateSerializer
 
         if self.action in ('partial_update'):
             return BookingChangeDateSerializer

@@ -3,11 +3,11 @@ from django.contrib.auth.models import PermissionsMixin
 from django.db import models
 from django.utils import timezone
 
-from apps.base_model import BaseModel
+from apps.core.base_models import ActiveSoftDeleteModel, TimeStampedModel
 from apps.users.managers.user_manager import UserManager
 
 
-class User(AbstractBaseUser, PermissionsMixin, BaseModel):
+class User(AbstractBaseUser, PermissionsMixin, ActiveSoftDeleteModel, TimeStampedModel):
     class Gender(models.TextChoices):
         male = "male", "Male"
         female = "female", "Female"
@@ -45,16 +45,6 @@ class User(AbstractBaseUser, PermissionsMixin, BaseModel):
     is_landlord = models.BooleanField(default=False)
 
     is_staff = models.BooleanField(default=False)
-    is_active = models.BooleanField(default=True)
-
-    # created_at = models.DateTimeField(auto_now_add=True)
-    # updated_at = models.DateTimeField(auto_now=True)
-    #
-    # # Soft delete
-    # is_deleted = models.BooleanField(default=False)
-    # deleted_at = models.DateTimeField(null=True, blank=True)
-
-    objects = UserManager()
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
@@ -66,13 +56,3 @@ class User(AbstractBaseUser, PermissionsMixin, BaseModel):
 
     def __str__(self):
         return self.email
-
-    def delete(self, using = None, keep_parents = False):
-        self.is_active = False
-        self.is_deleted = True
-        self.deleted_at = timezone.now()
-        return self.save(update_fields=['is_deleted', 'deleted_at'])
-
-    def hard_delete(self, using = None, keep_parents = False):
-        super().delete(using=using, keep_parents=keep_parents)
-        ...

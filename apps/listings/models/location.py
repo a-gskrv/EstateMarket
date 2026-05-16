@@ -1,8 +1,9 @@
 from django.db import models
-from django.utils import timezone
+
+from apps.core.base_models import ActiveSoftDeleteModel, TimeStampedModel
 
 
-class Location(models.Model):
+class Location(ActiveSoftDeleteModel, TimeStampedModel):
     postal_code = models.CharField(max_length=7)
     country = models.CharField(max_length=30)
     region = models.CharField(max_length=30)
@@ -27,18 +28,6 @@ class Location(models.Model):
         blank=True,
     )
 
-    is_active = models.BooleanField(default=True)
-
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(
-        auto_now=True,
-        null=True,
-        blank=True,
-    )
-
-    is_deleted = models.BooleanField(default=False)
-    deleted_at = models.DateTimeField(null=True, blank=True)
-
     class Meta:
         db_table = 'em_listings_location'
         verbose_name = 'Location'
@@ -57,10 +46,3 @@ class Location(models.Model):
 
         display_description = ", ".join([part for part in parts if part])
         return display_description
-
-    #
-    # def delete(self, using=None, keep_parents=False):
-    #     self.is_active = False
-    #     self.is_deleted = True
-    #     self.deleted_at = timezone.now()
-    #     return self.save(update_fields=['is_active', 'is_deleted', 'deleted_at'])

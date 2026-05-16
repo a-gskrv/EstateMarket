@@ -20,7 +20,6 @@ def register_listing_view(
                 user=user,
                 guest_ip=guest_ip,
                 guest_agent=guest_agent,
-                # user_agent = user_agent,
             )
 
         except Exception as e:

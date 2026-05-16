@@ -51,7 +51,15 @@ class ListingViewSet(ModelViewSet):
     )
 
     # selectrelated  &  prefetch_related()
-    queryset = Listing.objects.all()
+
+    def get_queryset(self):
+        user = self.request.user
+
+        if user and user.is_authenticated and user.is_superuser:
+            return Listing.all_objects.all()
+
+        return Listing.objects.all()
+
 
     permission_classes = [IsListingOwnerOrReadOnly]
 

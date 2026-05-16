@@ -1,6 +1,6 @@
 from django.utils import timezone
 
-from rest_framework.viewsets import ModelViewSet
+from rest_framework import viewsets
 
 from apps.listings.models import Listing, Property, PropertyType
 
@@ -14,8 +14,17 @@ from apps.listings.serializers.property import (
 )
 
 
-class PropertyViewSet(ModelViewSet):
-    queryset = Property.objects.all()
+class PropertyViewSet(viewsets.ModelViewSet):
+
+    def get_queryset(self):
+        user = self.request.user
+
+        if user and user.is_authenticated and user.is_superuser:
+            return Property.all_objects.all()
+
+        return Property.objects.all()
+
+
 
     def get_serializer_class(self):
         if self.action == "list":
@@ -54,8 +63,14 @@ class PropertyViewSet(ModelViewSet):
     #     )
 
 
-class PropertyTypeViewSet(ModelViewSet):
-    queryset = PropertyType.objects.all()
+class PropertyTypeViewSet(viewsets.ModelViewSet):
+    def get_queryset(self):
+        user = self.request.user
+
+        if user and user.is_authenticated and user.is_superuser:
+            return Property.all_objects.all()
+
+        return Property.objects.all()
 
     def get_serializer_class(self):
         if self.action == "list":

@@ -74,8 +74,6 @@ def get_top_listing_reviews(period_start=None, count=None):
     else:
         filter_date = Q()
 
-    print(period_start)
-
     top_listing = top_listing.annotate(
         reviews_count=Count(
             'bookings__reviews',

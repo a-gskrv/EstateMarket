@@ -50,8 +50,6 @@ class BookingViewSet(viewsets.ModelViewSet):
         return BookingListSerializer
 
     def get_permissions(self):
-
-        # print('get_permissions', self.request.user, self.action, self.request.method)
         if self.action in ('create'):
             permission_classes = [IsAdmin | IsTenant]
         elif self.action in ('partial_update', 'status_pending', 'status_cancelled'):
@@ -76,7 +74,6 @@ class BookingViewSet(viewsets.ModelViewSet):
         url_name='pending'
     )
     def status_pending(self, request, pk=None):
-        print("*"*90)
         obj = self.get_object()
 
         obj.booking_status = BookingStatus.PENDING

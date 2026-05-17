@@ -86,8 +86,6 @@ class BookingCreateSerializer(serializers.ModelSerializer):
 
         listing = attrs.get('listing')
         owner = listing.property.owner
-        print("#"*60)
-        print(listing, owner)
 
         if user == owner:
             raise serializers.ValidationError(

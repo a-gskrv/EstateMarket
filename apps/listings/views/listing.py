@@ -78,7 +78,6 @@ class ListingViewSet(ModelViewSet):
     permission_classes = [IsListingOwnerOrReadOnly]
 
     def get_serializer_class(self):
-        print('get_serializer_class', self.request.user, self.action, self.request.method)
         if self.action == 'list':
             return ListingListSerializer
         if self.action in ('create', 'update', 'partial_update'):
@@ -132,7 +131,6 @@ class ListingViewSet(ModelViewSet):
                 guest_ip=guest_ip,
                 guest_agent=guest_agent
             )
-
 
         except Exception as e:
             print(e)

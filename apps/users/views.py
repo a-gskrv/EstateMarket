@@ -71,7 +71,7 @@ class LogoutUser(APIView):
             pass
 
         except Exception as e:
-            print("logout >>>", 0)
+            print("logout >>>", e)
             return Response(
                 data={
                     "message": str(e)

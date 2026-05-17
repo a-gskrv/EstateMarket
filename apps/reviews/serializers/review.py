@@ -22,7 +22,7 @@ class ReviewListSerializer(serializers.ModelSerializer):
             'updated_at',
         ]
 
-    def get_short_review_text(self, obj):
+    def get_short_review_text(self, obj) -> str:
         if len(obj.review_text) > 100:
             return f"{obj.review_text[:96]} ..."
         return obj.review_text
@@ -46,12 +46,8 @@ class ReviewCreateSerializer(serializers.ModelSerializer):
         read_only_fields = ['user']
 
     def validate(self, attrs):
-        print('validate', attrs)
-
         request = self.context.get('request')
         user = request.user
-        print(user)
-
         booking = attrs.get('booking')
 
         if not booking:
@@ -60,7 +56,6 @@ class ReviewCreateSerializer(serializers.ModelSerializer):
             )
 
         if Review.objects.filter(booking=booking, user=user).exists():
-            print(booking, user)
             raise serializers.ValidationError(
                 "You have already reviewed this booking."
             )

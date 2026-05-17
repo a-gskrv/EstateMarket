@@ -1,6 +1,11 @@
 from django.urls import include, path
+from drf_spectacular.views import (
+    SpectacularAPIView,
+    SpectacularSwaggerView,
+    SpectacularRedocView
+)
 from rest_framework.routers import DefaultRouter
-from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+
 
 from apps.analytics.views import AnalyticsView
 from apps.bookings.views.booking import BookingViewSet

@@ -49,6 +49,8 @@ class User(AbstractBaseUser, PermissionsMixin, ActiveSoftDeleteModel, TimeStampe
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
 
+    objects = UserManager()
+
     class Meta:
         db_table = 'em_users_users'
         verbose_name = 'User'

@@ -29,6 +29,10 @@ class Listing(ActiveSoftDeleteModel, TimeStampedModel):
         blank=True,
     )
 
+    is_visible = models.BooleanField(
+        default=True,
+    )
+
     class Meta:
         db_table = 'em_listings_listing'
         verbose_name = 'Listing'

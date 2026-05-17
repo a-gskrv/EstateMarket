@@ -11,9 +11,9 @@ class ReviewViewSet(viewsets.ModelViewSet):
         user = self.request.user
 
         if user and user.is_authenticated and user.is_superuser:
-            return Review.all_objects.all()
+            return Review.objects.all()
 
-        return Review.objects.all()
+        return Review.active_objects.all()
 
     def get_serializer_class(self):
         if self.action == "list":
@@ -24,7 +24,7 @@ class ReviewViewSet(viewsets.ModelViewSet):
         return ReviewDetailSerializer
 
     def get_permissions(self):
-        return [IsBookingTenantOrReadOnly]
+        return [IsBookingTenantOrReadOnly()]
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)

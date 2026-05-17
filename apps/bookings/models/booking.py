@@ -61,4 +61,4 @@ class Booking(TimeStampedModel, ActiveSoftDeleteModel):
         verbose_name_plural = "Bookings"
 
     def __str__(self):
-        return f"{self.tenant}: {self.listing.title} -> ({self.booking_start_date} - {self.booking_end_date})"
+        return f"{self.id}. {self.tenant}: {self.listing.title} -> ({self.booking_start_date} - {self.booking_end_date})"

@@ -16,8 +16,8 @@ class SoftDeleteModel(models.Model):
     is_deleted = models.BooleanField(default=False)
     deleted_at = models.DateTimeField(null=True, blank=True)
 
-    objects = NotDeletedManager()
-    all_objects = models.Manager()
+    objects = models.Manager()
+    active_objects = NotDeletedManager()
 
     class Meta:
         abstract = True
@@ -36,8 +36,8 @@ class SoftDeleteModel(models.Model):
 class ActiveModel(models.Model):
     is_active = models.BooleanField(default=True)
 
-    objects = ActiveManager()
-    all_objects = models.Manager()
+    objects = models.Manager()
+    active_objects = ActiveManager()
 
     class Meta:
         abstract = True
@@ -46,8 +46,8 @@ class ActiveModel(models.Model):
 class ActiveSoftDeleteModel(SoftDeleteModel):
     is_active = models.BooleanField(default=True)
 
-    objects = ActiveNotDeletedManager()
-    all_objects = models.Manager()
+    objects = models.Manager()
+    active_objects = ActiveNotDeletedManager()
 
     class Meta:
         abstract = True

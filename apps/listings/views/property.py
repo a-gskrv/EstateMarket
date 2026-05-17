@@ -3,6 +3,7 @@ from django.utils import timezone
 from rest_framework import viewsets
 
 from apps.listings.models import Listing, Property, PropertyType
+from apps.listings.permissions import IsListingOwnerOrReadOnly, IsPropertyOwnerOrReadOnly
 
 from apps.listings.serializers.property import (
     PropertyListSerializer,
@@ -12,17 +13,21 @@ from apps.listings.serializers.property import (
     PropertyTypeListSerializer,
     PropertyCreateUpdateSerializer,
 )
+from apps.users.permissions import IsAdmin, IsAdminOrReadOnly
 
 
 class PropertyViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsPropertyOwnerOrReadOnly]
 
     def get_queryset(self):
         user = self.request.user
+        if not user or not user.is_authenticated:
+            return Property.active_objects.none()
 
-        if user and user.is_authenticated and user.is_superuser:
-            return Property.all_objects.all()
+        if user.is_superuser:
+            return Property.objects.all()
 
-        return Property.objects.all()
+        return Property.active_objects.all().filter(owner=user)
 
 
 
@@ -64,26 +69,19 @@ class PropertyViewSet(viewsets.ModelViewSet):
 
 
 class PropertyTypeViewSet(viewsets.ModelViewSet):
+
+    permission_classes = [IsAdminOrReadOnly]
+
     def get_queryset(self):
         user = self.request.user
 
         if user and user.is_authenticated and user.is_superuser:
-            return Property.all_objects.all()
+            return PropertyType.objects.all()
 
-        return Property.objects.all()
+        return PropertyType.active_objects.all()
 
     def get_serializer_class(self):
         if self.action == "list":
             return PropertyTypeListSerializer
 
         return PropertyTypeDetailSerializer
-
-    def perform_destroy(self, instance):
-        instance.is_deleted = True
-        instance.deleted_at = timezone.now()
-        return instance.save(
-            update_fields=[
-                'is_deleted',
-                'deleted_at'
-            ]
-        )

@@ -1,4 +1,5 @@
 import django_filters
+from django.db.models import Q
 from django.utils import timezone
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, status
@@ -56,9 +57,11 @@ class ListingViewSet(ModelViewSet):
         user = self.request.user
 
         if user and user.is_authenticated and user.is_superuser:
-            return Listing.all_objects.all()
+            return Listing.objects.all()
 
-        return Listing.objects.all()
+        return Listing.active_objects.all().filter(
+            Q(property__owner=user) | Q(is_visible=True)
+        )
 
 
     permission_classes = [IsListingOwnerOrReadOnly]

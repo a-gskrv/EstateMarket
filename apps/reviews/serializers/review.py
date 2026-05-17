@@ -37,12 +37,20 @@ class ReviewDetailSerializer(serializers.ModelSerializer):
 class ReviewCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Review
-        fields = '__all__'
+        fields = [
+            'booking',
+            'user',
+            'rating',
+            'review_text',
+        ]
+        read_only_fields = ['user']
 
     def validate(self, attrs):
+        print('validate', attrs)
 
         request = self.context.get('request')
         user = request.user
+        print(user)
 
         booking = attrs.get('booking')
 
@@ -52,6 +60,7 @@ class ReviewCreateSerializer(serializers.ModelSerializer):
             )
 
         if Review.objects.filter(booking=booking, user=user).exists():
+            print(booking, user)
             raise serializers.ValidationError(
                 "You have already reviewed this booking."
             )

@@ -67,7 +67,18 @@ class BookingDetailSerializer(serializers.ModelSerializer):
 class BookingCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Booking
-        fields = '__all__'
+        fields = [
+            'listing',
+            'tenant',
+            'booking_start_date',
+            'booking_end_date',
+            'booking_amount'
+        ]
+        read_only_fields = [
+            'tenant',
+            'booking_amount'
+
+        ]
 
     def validate(self, attrs):
         request = self.context.get('request')
@@ -75,6 +86,8 @@ class BookingCreateSerializer(serializers.ModelSerializer):
 
         listing = attrs.get('listing')
         owner = listing.property.owner
+        print("#"*60)
+        print(listing, owner)
 
         if user == owner:
             raise serializers.ValidationError(
@@ -83,6 +96,14 @@ class BookingCreateSerializer(serializers.ModelSerializer):
 
         booking_end_date = attrs.get('booking_end_date')
         booking_start_date = attrs.get('booking_start_date')
+
+        if booking_start_date >= booking_end_date:
+            raise serializers.ValidationError(
+                'Booking start date must be before booking end date.'
+            )
+
+
+
         is_listing_available = check_booking_availability(
             listing,
             booking_start_date,
@@ -93,6 +114,12 @@ class BookingCreateSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(
                 "This listing is not available for the selected dates."
             )
+
+        count_days = (booking_end_date - booking_start_date).days
+        attrs['booking_amount'] = count_days * listing.price
+        print(attrs.get('booking_amount'))
+
+
 
         return attrs
 
@@ -128,6 +155,13 @@ class BookingUpdateStatusSerializer(serializers.ModelSerializer):
             'id',
             'confirmed_at',
             'booking_status',
+            'is_tenant_checked_in',
+            'updated_at',
+            'actual_end_date'
+        ]
+        read_only_fields = [
+            'id',
+            'confirmed_at',
             'is_tenant_checked_in',
             'updated_at',
             'actual_end_date'

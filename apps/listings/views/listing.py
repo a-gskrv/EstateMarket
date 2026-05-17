@@ -1,5 +1,5 @@
 import django_filters
-from django.db.models import Q
+from django.db.models import Q, F, Count, Avg
 from django.utils import timezone
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, status
@@ -10,9 +10,9 @@ from rest_framework.viewsets import ModelViewSet
 from apps.analytics.services.listing_views import register_listing_view
 from apps.analytics.services.search_query import register_search_query
 
-from apps.core.permissions import IsLandlord
+
 from apps.listings.filters import ListingFilter
-from apps.listings.models import Listing, Property
+from apps.listings.models import Listing
 from apps.listings.permissions import IsListingOwnerOrReadOnly
 
 from apps.listings.serializers.listing import (
@@ -20,7 +20,7 @@ from apps.listings.serializers.listing import (
     ListingDetailSerializer,
     ListingCreateUpdateSerializer
 )
-from apps.users.permissions import IsAdmin
+
 
 
 class ListingViewSet(ModelViewSet):
@@ -49,6 +49,9 @@ class ListingViewSet(ModelViewSet):
         'price',
         'created_at',
         'updated_at',
+        'views_count',
+        'reviews_count',
+        'avg_rating',
     )
 
     # selectrelated  &  prefetch_related()
@@ -57,11 +60,19 @@ class ListingViewSet(ModelViewSet):
         user = self.request.user
 
         if user and user.is_authenticated and user.is_superuser:
-            return Listing.objects.all()
+            queryset = Listing.objects.all()
 
-        return Listing.active_objects.all().filter(
+        queryset = Listing.active_objects.all().filter(
             Q(property__owner=user) | Q(is_visible=True)
         )
+
+        queryset = queryset.annotate(
+            views_count=Count('views', distinct=True),
+            reviews_count=Count('bookings__reviews', distinct=True),
+            avg_rating=Avg('bookings__reviews__rating', distinct=True),
+        )
+
+        return queryset
 
 
     permission_classes = [IsListingOwnerOrReadOnly]

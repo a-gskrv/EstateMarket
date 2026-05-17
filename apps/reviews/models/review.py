@@ -3,10 +3,11 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 from django.utils import timezone
 
+from apps.core.base_models import ActiveSoftDeleteModel, TimeStampedModel
 
 USER_MODEL = get_user_model()
 
-class Review(models.Model):
+class Review(ActiveSoftDeleteModel, TimeStampedModel):
     booking = models.ForeignKey(
         "bookings.Booking",
         on_delete=models.CASCADE,
@@ -28,16 +29,6 @@ class Review(models.Model):
 
     review_text = models.TextField()
 
-    is_active = models.BooleanField(default=True)
-
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(
-        auto_now=True,
-    )
-
-    is_deleted = models.BooleanField(default=False)
-    deleted_at = models.DateTimeField(null=True, blank=True)
-
     class Meta:
         db_table = "em_reviews_review"
         verbose_name = "Review"
@@ -52,9 +43,3 @@ class Review(models.Model):
 
     def __str__(self):
         return f"{self.user}: {self.rating} -> ({self.booking.listing.title})"
-
-    def delete(self, using=None, keep_parents=False):
-        self.is_active = False
-        self.is_deleted = True
-        self.deleted_at = timezone.now()
-        return self.save(update_fields=['is_active', 'is_deleted', 'deleted_at'])

@@ -17,10 +17,12 @@ from apps.bookings.serializers import (
 )
 
 from apps.core.permissions import IsTenant
+from apps.pagination import CreatedAtCursorPagination
 from apps.users.permissions import IsAdmin
 
 
 class BookingViewSet(viewsets.ModelViewSet):
+    pagination_class = CreatedAtCursorPagination
 
     def get_queryset(self):
         user = self.request.user
@@ -28,8 +30,7 @@ class BookingViewSet(viewsets.ModelViewSet):
         if user and user.is_authenticated and user.is_superuser:
             return Booking.objects.all()
 
-        queryset = Booking.objects.all()
-        queryset = queryset.filter(is_active=True)
+        queryset = Booking.active_objects.all()
         queryset = queryset.filter(
             Q(tenant=user) |
             Q(listing__property__owner=user)
@@ -37,28 +38,26 @@ class BookingViewSet(viewsets.ModelViewSet):
         return queryset
 
     def get_serializer_class(self):
-        # if self.action in ('update', 'partial_update'):
-        #     return BookingDetailSerializer
-        # elif self.action == 'create':
-        #     return BookingCreateSerializer
 
         if self.action in ('partial_update'):
             return BookingChangeDateSerializer
-            ...
-        elif self.action in ('status_confirmed', 'status_rejected'):
-            ...
-        elif self.action in ('status_cancelled'):
-            ...
+
+        # elif self.action in ('status_confirmed', 'status_rejected'):
+        #     ...
+        # elif self.action in ('status_cancelled'):
+        #     ...
+        elif self.action in ('create', 'update', 'partial_update'):
+            return BookingCreateSerializer
 
         return BookingListSerializer
 
     def get_permissions(self):
-
-        print('get_permissions', self.request.user, self.action, self.request.method)
-        if self.action in ('create', 'partial_update', 'status_pending', 'status_cancelled'):
-            permission_classes = [IsTenant | IsAdmin]
-        elif self.action in ('status_confirmed', 'status_rejected'):
-            permission_classes = [IsBookingPropertyOwner | IsAdmin]
+        if self.action in ('create',):
+            permission_classes = [IsAdmin | IsTenant]
+        elif self.action in ('partial_update', 'status_pending', 'status_cancelled'):
+            permission_classes = [IsAdmin | IsBookingOwner]
+        elif self.action in ('status_confirmed', 'status_rejected', 'status_completed'):
+            permission_classes = [IsAdmin | IsBookingPropertyOwner]
         elif self.action in ['list', 'retrieve']:
             permission_classes = [IsAuthenticated]
         else:
@@ -95,9 +94,9 @@ class BookingViewSet(viewsets.ModelViewSet):
     )
     def status_confirmed(self, request, pk=None):
         obj = self.get_object()
-
-        obj.booking_status = BookingStatus.CONFIRMED
-        obj.confirmed_at = timezone.now()
+        if not obj.booking_status == BookingStatus.CONFIRMED:
+            obj.booking_status = BookingStatus.CONFIRMED
+            obj.confirmed_at = timezone.now()
 
         obj.save(update_fields=["booking_status", 'updated_at', 'confirmed_at'])
         serializer = BookingUpdateStatusSerializer(obj)

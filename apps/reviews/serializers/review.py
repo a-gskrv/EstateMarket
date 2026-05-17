@@ -22,7 +22,7 @@ class ReviewListSerializer(serializers.ModelSerializer):
             'updated_at',
         ]
 
-    def get_short_review_text(self, obj):
+    def get_short_review_text(self, obj) -> str:
         if len(obj.review_text) > 100:
             return f"{obj.review_text[:96]} ..."
         return obj.review_text
@@ -37,13 +37,17 @@ class ReviewDetailSerializer(serializers.ModelSerializer):
 class ReviewCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Review
-        fields = '__all__'
+        fields = [
+            'booking',
+            'user',
+            'rating',
+            'review_text',
+        ]
+        read_only_fields = ['user']
 
     def validate(self, attrs):
-
         request = self.context.get('request')
         user = request.user
-
         booking = attrs.get('booking')
 
         if not booking:

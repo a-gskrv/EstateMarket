@@ -1,8 +1,6 @@
 from django.db import models
-from django.utils import timezone
 
-from apps.listings.models import Listing
-from apps.users.models import User
+from apps.core.base_models import TimeStampedModel, ActiveSoftDeleteModel
 
 
 class BookingStatus(models.IntegerChoices):
@@ -13,7 +11,7 @@ class BookingStatus(models.IntegerChoices):
     REJECTED = 4, "Rejected"
 
 
-class Booking(models.Model):
+class Booking(TimeStampedModel, ActiveSoftDeleteModel):
     listing = models.ForeignKey(
         'listings.Listing',
         on_delete=models.RESTRICT,
@@ -57,28 +55,10 @@ class Booking(models.Model):
 
     is_tenant_checked_in = models.BooleanField(default=False)
 
-    is_active = models.BooleanField(default=True)
-
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(
-        auto_now=True,
-        null=True,
-        blank=True,
-    )
-
-    is_deleted = models.BooleanField(default=False)
-    deleted_at = models.DateTimeField(null=True, blank=True)
-
     class Meta:
         db_table = "em_bookings_booking"
         verbose_name = "Booking"
         verbose_name_plural = "Bookings"
 
     def __str__(self):
-        return f"{self.tenant}: {self.listing.title} -> ({self.booking_start_date} - {self.booking_end_date})"
-
-    def delete(self, using=None, keep_parents=False):
-        self.is_active = False
-        self.is_deleted = True
-        self.deleted_at = timezone.now()
-        return self.save(update_fields=['is_active', 'is_deleted', 'deleted_at'])
+        return f"{self.id}. {self.tenant}: {self.listing.title} -> ({self.booking_start_date} - {self.booking_end_date})"

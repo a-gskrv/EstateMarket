@@ -6,11 +6,18 @@ from apps.listings.serializers.property import PropertyTypeListSerializer, Prope
 
 
 class ListingListSerializer(serializers.ModelSerializer):
+    views_count = serializers.IntegerField(read_only=True)
+    reviews_count = serializers.IntegerField(read_only=True)
+    avg_rating = serializers.FloatField(read_only=True)
     class Meta:
         model = Listing
         fields = [
             'id',
-            'title', ]
+            'title',
+            'views_count',
+            'reviews_count',
+            'avg_rating',
+        ]
 
 class ListingDetailSerializer(serializers.ModelSerializer):
     location = LocationDetailSerializer(read_only=True)

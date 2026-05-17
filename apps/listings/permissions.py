@@ -1,22 +1,21 @@
-from rest_framework.permissions import BasePermission
-
+from rest_framework.permissions import BasePermission, SAFE_METHODS
 
 
 class IsListingOwnerOrReadOnly(BasePermission):
     message = "You do not have permission to manage this listing."
 
     def has_permission(self, request, view):
-        if view.action == "create":
-            return bool(
-                request.user and
-                request.user.is_authenticated and
-                (
-                        request.user.is_superuser or
-                        request.user.is_landlord
-                )
-            )
+        if request.method in SAFE_METHODS:
+            return True
 
-        return True
+        return bool(
+            request.user and
+            request.user.is_authenticated and
+            (
+                    request.user.is_superuser or
+                    request.user.is_landlord
+            )
+        )
 
     def has_object_permission(self, request, view, obj):
         if request.method in SAFE_METHODS:
@@ -36,17 +35,18 @@ class IsPropertyOwnerOrReadOnly(BasePermission):
     message = "You do not have permission to manage this property."
 
     def has_permission(self, request, view):
-        if view.action == "create":
-            return bool(
-                request.user and
-                request.user.is_authenticated and
-                (
-                        request.user.is_superuser or
-                        request.user.is_landlord
-                )
-            )
+        if request.method in SAFE_METHODS:
+            return True
 
-        return True
+        return bool(
+            request.user and
+            request.user.is_authenticated and
+            (
+                request.user.is_superuser or
+                request.user.is_landlord
+            )
+        )
+
 
     def has_object_permission(self, request, view, obj):
         if request.method in SAFE_METHODS:

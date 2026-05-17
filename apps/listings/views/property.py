@@ -1,8 +1,9 @@
 from django.utils import timezone
 
-from rest_framework.viewsets import ModelViewSet
+from rest_framework import viewsets
 
 from apps.listings.models import Listing, Property, PropertyType
+from apps.listings.permissions import IsListingOwnerOrReadOnly, IsPropertyOwnerOrReadOnly
 
 from apps.listings.serializers.property import (
     PropertyListSerializer,
@@ -12,10 +13,23 @@ from apps.listings.serializers.property import (
     PropertyTypeListSerializer,
     PropertyCreateUpdateSerializer,
 )
+from apps.users.permissions import IsAdmin, IsAdminOrReadOnly
 
 
-class PropertyViewSet(ModelViewSet):
-    queryset = Property.objects.all()
+class PropertyViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsPropertyOwnerOrReadOnly]
+
+    def get_queryset(self):
+        user = self.request.user
+        if not user or not user.is_authenticated:
+            return Property.active_objects.none()
+
+        if user.is_superuser:
+            return Property.objects.all()
+
+        return Property.active_objects.all().filter(owner=user)
+
+
 
     def get_serializer_class(self):
         if self.action == "list":
@@ -54,21 +68,22 @@ class PropertyViewSet(ModelViewSet):
     #     )
 
 
-class PropertyTypeViewSet(ModelViewSet):
-    queryset = PropertyType.objects.all()
+class PropertyTypeViewSet(viewsets.ModelViewSet):
+
+    permission_classes = [IsAdminOrReadOnly]
+    pagination_class = None
+
+
+    def get_queryset(self):
+        user = self.request.user
+
+        if user and user.is_authenticated and user.is_superuser:
+            return PropertyType.objects.all().order_by("name")
+
+        return PropertyType.active_objects.all().order_by("name")
 
     def get_serializer_class(self):
         if self.action == "list":
             return PropertyTypeListSerializer
 
         return PropertyTypeDetailSerializer
-
-    def perform_destroy(self, instance):
-        instance.is_deleted = True
-        instance.deleted_at = timezone.now()
-        return instance.save(
-            update_fields=[
-                'is_deleted',
-                'deleted_at'
-            ]
-        )

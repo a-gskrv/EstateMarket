@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     "django_filters",
     "rest_framework_simplejwt",
     "rest_framework_simplejwt.token_blacklist",
+    'drf_spectacular',
 
     # Local apps
     "apps.users.apps.UsersConfig",
@@ -116,7 +117,10 @@ else:
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework_simplejwt.authentication.JWTAuthentication',
-    ]
+    ],
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+    'DEFAULT_PAGINATION_CLASS': 'apps.pagination.MyCustomCursorPagination',
+
 }
 
 from datetime import timedelta
@@ -152,6 +156,60 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+
+SPECTACULAR_SETTINGS = {
+    "TITLE": "EstateMarket API",
+    "DESCRIPTION": (
+        "API documentation for the EstateMarket backend application. "
+        "The project provides endpoints for users, property objects, listings, "
+        "bookings, reviews, analytics, listing views, and search query statistics. "
+        "Access to the documentation is intended for staff users only. "
+        "API requests can be tested with JWT authentication."
+    ),
+    "VERSION": "1.0.0",
+    "OAS_VERSION": "3.0.3",
+
+    "SERVE_INCLUDE_SCHEMA": False,
+    "SERVE_PUBLIC": False,
+    "SERVE_PERMISSIONS": [
+        "rest_framework.permissions.IsAdminUser",
+    ],
+    "SERVE_AUTHENTICATION": [
+        "rest_framework.authentication.SessionAuthentication",
+    ],
+
+    "AUTHENTICATION_WHITELIST": [
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+    ],
+
+    "SWAGGER_UI_SETTINGS": {
+        "deepLinking": True,
+        "displayOperationId": True,
+        "persistAuthorization": True,
+        "filter": True,
+        "tryItOutEnabled": True,
+        "docExpansion": "list",
+        "defaultModelsExpandDepth": 2,
+        "defaultModelExpandDepth": 2,
+        "displayRequestDuration": True,
+        "tagsSorter": "alpha",
+        "operationsSorter": "alpha",
+    },
+
+    "SWAGGER_UI_OAUTH2_CONFIG": {},
+    "REDOC_UI_SETTINGS": {},
+
+    "SCHEMA_PATH_PREFIX": r"/api",
+    "COMPONENT_SPLIT_REQUEST": True,
+    "SORT_OPERATIONS": True,
+    "SORT_OPERATION_PARAMETERS": True,
+
+    "CONTACT": {
+        "name": "Albert Gaskarov",
+        "email": "agskrv@gmail.com",
+    },
+}
+
 
 
 # Internationalization

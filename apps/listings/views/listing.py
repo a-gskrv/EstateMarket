@@ -20,10 +20,12 @@ from apps.listings.serializers.listing import (
     ListingDetailSerializer,
     ListingCreateUpdateSerializer
 )
-
+from apps.pagination import CreatedAtCursorPagination
 
 
 class ListingViewSet(ModelViewSet):
+    pagination_class = CreatedAtCursorPagination
+
     filter_backends = (
         DjangoFilterBackend,
         filters.OrderingFilter,

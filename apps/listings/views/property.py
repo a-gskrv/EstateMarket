@@ -71,14 +71,16 @@ class PropertyViewSet(viewsets.ModelViewSet):
 class PropertyTypeViewSet(viewsets.ModelViewSet):
 
     permission_classes = [IsAdminOrReadOnly]
+    pagination_class = None
+
 
     def get_queryset(self):
         user = self.request.user
 
         if user and user.is_authenticated and user.is_superuser:
-            return PropertyType.objects.all()
+            return PropertyType.objects.all().order_by("name")
 
-        return PropertyType.active_objects.all()
+        return PropertyType.active_objects.all().order_by("name")
 
     def get_serializer_class(self):
         if self.action == "list":

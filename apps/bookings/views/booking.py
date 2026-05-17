@@ -17,10 +17,12 @@ from apps.bookings.serializers import (
 )
 
 from apps.core.permissions import IsTenant
+from apps.pagination import CreatedAtCursorPagination
 from apps.users.permissions import IsAdmin
 
 
 class BookingViewSet(viewsets.ModelViewSet):
+    pagination_class = CreatedAtCursorPagination
 
     def get_queryset(self):
         user = self.request.user
@@ -50,7 +52,7 @@ class BookingViewSet(viewsets.ModelViewSet):
         return BookingListSerializer
 
     def get_permissions(self):
-        if self.action in ('create'):
+        if self.action in ('create',):
             permission_classes = [IsAdmin | IsTenant]
         elif self.action in ('partial_update', 'status_pending', 'status_cancelled'):
             permission_classes = [IsAdmin | IsBookingOwner]
